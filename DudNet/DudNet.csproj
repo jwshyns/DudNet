@@ -1,6 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
     <PropertyGroup>
+        <PackageId>Jwshyns.DudNet</PackageId>
         <Authors>Josh Haynes</Authors>
         <Description>Proxy-pattern source generator</Description>
         <PackageProjectUrl>https://github.com/jwshyns/DudNet</PackageProjectUrl>
