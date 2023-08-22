@@ -8,13 +8,14 @@
         <PackageTags>proxy, proxy-pattern, source-generator, source-generation, source-gen</PackageTags>
         <PackageLicenseExpression>MIT</PackageLicenseExpression>
         
-        <TargetFramework>net7.0</TargetFramework>
+        <TargetFramework>netstandard2.0</TargetFramework>
         <EnforceExtendedAnalyzerRules>true</EnforceExtendedAnalyzerRules>
         <ImplicitUsings>enable</ImplicitUsings>
         <Nullable>enable</Nullable>
         <MinVerTagPrefix>v</MinVerTagPrefix>
         <MinVerMinimumMajorMinor>1.0</MinVerMinimumMajorMinor>
         <EnablePackageValidation>true</EnablePackageValidation>
+        <LangVersion>10</LangVersion>
     </PropertyGroup>
 
     <ItemGroup>
