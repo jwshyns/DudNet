@@ -5,7 +5,7 @@
         <Authors>Josh Haynes</Authors>
         <Description>Proxy-pattern source generator</Description>
         <PackageProjectUrl>https://github.com/jwshyns/DudNet</PackageProjectUrl>
-        <PackageTags>proxy, proxy pattern, source generator, source generation</PackageTags>
+        <PackageTags>proxy, proxy-pattern, source-generator, source-generation, source-gen</PackageTags>
         <PackageLicenseExpression>MIT</PackageLicenseExpression>
         
         <TargetFramework>net7.0</TargetFramework>
