@@ -43,13 +43,13 @@ public partial class ExampleServiceProxy : IExampleService {
 
 	private readonly IExampleService _service;
 
-    public void ExampleFunction(){
+	public void ExampleFunction() {
 		Interceptor();
 		ExampleFunctionInterceptor();
 		_service.ExampleFunction();
 	}
     
-	public int ExampleFunctionWithArgumentAndReturn(int number){
+	public int ExampleFunctionWithArgumentAndReturn(int number) {
 		Interceptor();
 		ExampleFunctionWithArgumentAndReturnInterceptor(number);
 		_service.ExampleFunctionWithArgumentAndReturn(number);
@@ -60,7 +60,6 @@ public partial class ExampleServiceProxy : IExampleService {
 	partial void ExampleFunctionInterceptor();
 
 	partial void ExampleFunctionWithArgumentAndReturnInterceptor(int number);
-
 }
 ```
 and 
@@ -69,9 +68,11 @@ using DudNet.Attributes;
 
 public class ExampleServiceDud : IExampleService {
 
-    public void ExampleFunction(){}
+    public void ExampleFunction() {
+    }
     
-	public int ExampleFunctionWithArgumentAndReturn(int number){}
+    public int ExampleFunctionWithArgumentAndReturn(int number) {
+    }
 
 }
 ```
@@ -80,7 +81,7 @@ These generated classes can be used by further implementing the `partial` proxy 
 ```csharp
 public partial class ExampleServiceProxy : IExampleService {
     
-    public ExampleServiceProxy(ExampleProxyService service){
+    public ExampleServiceProxy(ExampleProxyService service) {
         // Some logic to determine whether you want to effectively "disable" the service
         if (Random.Shared.NextDouble() > 0.5)
         { 
@@ -91,12 +92,13 @@ public partial class ExampleServiceProxy : IExampleService {
         _service = new ExampleServiceDud();
     }
     
-	partial void Interceptor([CallerMemberName]string callerName = null){
+    partial void Interceptor([CallerMemberName]string callerName = null) {
         Console.Writeline("'{caller}' was called", callerName);
     }   
-
-	partial void ExampleFunctionWithArgumentAndReturnInterceptor(int number){
-        if(number > 5){
+    
+    partial void ExampleFunctionWithArgumentAndReturnInterceptor(int number) {
+        if(number > 5) 
+        {
             throw new Exception("Received number value '{number}' - too high!", number);
         }
     }

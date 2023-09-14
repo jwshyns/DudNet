@@ -7,7 +7,7 @@
         <PackageProjectUrl>https://github.com/jwshyns/DudNet</PackageProjectUrl>
         <PackageTags>proxy, proxy-pattern, source-generator, source-generation, source-gen</PackageTags>
         <PackageLicenseExpression>MIT</PackageLicenseExpression>
-        
+
         <TargetFramework>netstandard2.0</TargetFramework>
         <EnforceExtendedAnalyzerRules>true</EnforceExtendedAnalyzerRules>
         <ImplicitUsings>enable</ImplicitUsings>
@@ -20,22 +20,22 @@
 
     <ItemGroup>
         <PackageReference Include="DotNet.ReproducibleBuilds" Version="1.1.1">
-          <PrivateAssets>all</PrivateAssets>
-          <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+            <PrivateAssets>all</PrivateAssets>
+            <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
         </PackageReference>
         <PackageReference Include="Microsoft.CodeAnalysis.Analyzers" Version="3.3.4">
             <PrivateAssets>all</PrivateAssets>
             <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
         </PackageReference>
-        <PackageReference Include="Microsoft.CodeAnalysis.CSharp" Version="4.6.0" />
+        <PackageReference Include="Microsoft.CodeAnalysis.CSharp" Version="4.6.0"/>
         <PackageReference Include="MinVer" Version="4.3.0">
-          <PrivateAssets>all</PrivateAssets>
-          <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+            <PrivateAssets>all</PrivateAssets>
+            <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
         </PackageReference>
     </ItemGroup>
-    
+
     <ItemGroup>
-        <None Include="$(OutputPath)\$(AssemblyName).dll" Pack="true" PackagePath="analyzers/dotnet/cs" Visible="false" />
+        <None Include="$(OutputPath)\$(AssemblyName).dll" Pack="true" PackagePath="analyzers/dotnet/cs" Visible="false"/>
     </ItemGroup>
 
     <ItemGroup>
