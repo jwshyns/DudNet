@@ -84,9 +84,8 @@ public static class Generator
     {
         var name = methodSymbol.Name;
         var parameters = GetParameterListAsString(methodSymbol.Parameters);
-        var returnType = methodSymbol.ReturnType;
 
-        return $"partial {returnType} {name}Interceptor({parameters});\n";
+        return $"partial void {name}Interceptor({parameters});\n";
     }
 
     private static string GetParameterListAsString(ImmutableArray<IParameterSymbol> parameterSymbols)
