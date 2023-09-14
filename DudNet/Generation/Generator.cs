@@ -5,8 +5,20 @@ using Microsoft.CodeAnalysis.CSharp;
 
 namespace DudNet.Generation;
 
-public static class Generator
+/// <summary>
+/// Functionality for generating source for a proxied service.
+/// </summary>
+internal static class Generator
 {
+    /// <summary>
+    /// Creates source for a proxy service.
+    /// </summary>
+    /// <param name="context">Context for source generation.</param>
+    /// <param name="usings">Usings (imports) for the source.</param>
+    /// <param name="className">The name of the service to be proxied.</param>
+    /// <param name="interfaceName">The name of the interface the service implements.</param>
+    /// <param name="assemblyName">The name of the service's containing assembly.</param>
+    /// <param name="methods">The methods the interface defines.</param>
     public static void GenerateProxyService(
         SourceProductionContext context,
         string usings,
@@ -17,9 +29,12 @@ public static class Generator
     )
     {
         var newClassName = $"{className}Proxy";
-        var methodStrings = methods.Select(GetMethodString).Where(x => x is not null);
+        // get string representing the proxy methods
+        var methodStrings = methods.Select(GetProxyMethodString).Where(x => x is not null);
+        // get string representing the partial interceptors
         var interceptorStrings = methods.Select(GetInterceptorMethodString);
-
+        
+        // build the source
         var stringBuilder = new StringBuilder()
             .AppendLine("using System.Runtime.CompilerServices;")
             .AppendLine(usings)
@@ -34,10 +49,16 @@ public static class Generator
             .AppendLine("\tpartial void Interceptor([CallerMemberName]string callerName = null);\n")
             .AppendLine($"\t{string.Join("\n\t", interceptorStrings)}")
             .Append('}');
-
+        
+        // add the source to the compilation output
         context.AddSource($"{newClassName}.g.cs", stringBuilder.ToString());
     }
-
+    
+    /// <summary>
+    /// Builds a list of string representing usings for the service being proxied.
+    /// </summary>
+    /// <param name="namedTypeSymbol">The <see cref="INamedTypeSymbol"/> representing the service.</param>
+    /// <returns>A list of string representing usings for the service being proxied</returns>
     public static List<string> GetUsingDirectivesForTypeFile(INamedTypeSymbol namedTypeSymbol)
     {
         var usingDirectivesList = new List<string>();
@@ -59,14 +80,24 @@ public static class Generator
 
         return usingDirectivesList;
     }
-
-    private static string? GetMethodString(IMethodSymbol methodSymbol)
+    
+    /// <summary>
+    /// Builds a string presenting a proxied method.
+    /// </summary>
+    /// <param name="methodSymbol">The <see cref="IMethodSymbol"/> being proxied.</param>
+    /// <returns>A string representing a proxied method.</returns>
+    private static string? GetProxyMethodString(IMethodSymbol methodSymbol)
     {
         var methodString = methodSymbol.DeclaringSyntaxReferences.FirstOrDefault()?.GetSyntax().ToFullString();
-        return methodString?.Replace(";", GetMethodStringBody(methodSymbol));
+        return methodString?.Replace(";", GetProxyMethodStringBody(methodSymbol));
     }
-
-    private static string GetMethodStringBody(IMethodSymbol methodSymbol)
+    
+    /// <summary>
+    /// Builds a string representing the body of a proxied method.
+    /// </summary>
+    /// <param name="methodSymbol">The <see cref="IMethodSymbol"/> being proxied.</param>
+    /// <returns>A string representing body of a proxied method.</returns>
+    private static string GetProxyMethodStringBody(IMethodSymbol methodSymbol)
     {
         var methodName = methodSymbol.Name;
         var methodArgumentString = string.Join(", ", methodSymbol.Parameters.Select(x => x.Name));
@@ -79,7 +110,12 @@ public static class Generator
 
         return stringBuilder.ToString();
     }
-
+    
+    /// <summary>
+    /// Builds a string representation of an interceptor for a particular <see cref="IMethodSymbol"/>.
+    /// </summary>
+    /// <param name="methodSymbol">The method symbol being converted to an interceptor string.</param>
+    /// <returns>An interceptor string representation of the provided method.</returns>
     private static string GetInterceptorMethodString(IMethodSymbol methodSymbol)
     {
         var name = methodSymbol.Name;
@@ -87,12 +123,26 @@ public static class Generator
 
         return $"partial void {name}Interceptor({parameters});\n";
     }
-
+    
+    /// <summary>
+    /// Converts a <see cref="ImmutableArray{IParameterSymbol}"/> to a string representation.
+    /// </summary>
+    /// <param name="parameterSymbols">The parameters being converted to a string.</param>
+    /// <returns>A string representation of method parameters.</returns>
     private static string GetParameterListAsString(ImmutableArray<IParameterSymbol> parameterSymbols)
     {
         return string.Join(", ", parameterSymbols.Select(x => $"{x.Type} {x.Name}"));
     }
-
+    
+    /// <summary>
+    /// Creates source for a dud service.
+    /// </summary>
+    /// <param name="context">Context for source generation.</param>
+    /// <param name="usings">Usings (imports) for the source.</param>
+    /// <param name="className">The name of the service to be proxied.</param>
+    /// <param name="interfaceName">The name of the interface the service implements.</param>
+    /// <param name="assemblyName">The name of the service's containing assembly.</param>
+    /// <param name="methods">The methods the interface defines.</param>
     public static void GenerateDudService(
         SourceProductionContext context,
         string usings,
@@ -103,6 +153,8 @@ public static class Generator
     )
     {
         var newClassName = $"{className}Dud";
+        
+        // get 
         var methodStrings = methods
             .Select(x => x.DeclaringSyntaxReferences.FirstOrDefault()?.GetSyntax().ToFullString().Replace(";", "{}"));
 
