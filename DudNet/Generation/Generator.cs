@@ -1,4 +1,5 @@
 ﻿using System.Collections.Immutable;
+using System.Diagnostics.CodeAnalysis;
 using System.Text;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
@@ -8,6 +9,7 @@ namespace DudNet.Generation;
 /// <summary>
 /// Functionality for generating source for a proxied service.
 /// </summary>
+[SuppressMessage("MicrosoftCodeAnalysisCorrectness", "RS1035:Do not use APIs banned for analyzers")]
 internal static class Generator
 {
     /// <summary>
@@ -44,10 +46,10 @@ internal static class Generator
             .AppendLine()
             .AppendLine($"\tprivate readonly {interfaceName} _service;")
             .AppendLine()
-            .AppendLine(string.Join("\r\n\r\n", methodStrings))
+            .AppendLine(string.Join($"{Environment.NewLine}{Environment.NewLine}", methodStrings))
             .AppendLine()
-            .AppendLine("\tpartial void Interceptor([CallerMemberName]string callerName = null);\r\n")
-            .AppendLine($"\t{string.Join("\r\n\t", interceptorStrings)}")
+            .AppendLine($"\tpartial void Interceptor([CallerMemberName]string callerName = null);{Environment.NewLine}")
+            .AppendLine($"\t{string.Join($"{Environment.NewLine}\t", interceptorStrings)}")
             .Append('}');
 
         // add the source to the compilation output
@@ -76,7 +78,7 @@ internal static class Generator
 
         // Retrieve all using directives in the file
         usingDirectivesList.AddRange(root.Usings.Select(usingDirective =>
-            $"{usingDirective.NormalizeWhitespace().ToFullString()}\r\n"));
+            $"{usingDirective.NormalizeWhitespace().ToFullString()}{Environment.NewLine}"));
 
         return usingDirectivesList;
     }
@@ -131,7 +133,7 @@ internal static class Generator
     /// <returns>A string representing body of a dud method.</returns>
     private static string GetDudMethodStringBody(IMethodSymbol methodSymbol)
     {
-        return methodSymbol.ReturnsVoid ? " {}" : $" {{\r\n\t\treturn ({methodSymbol.ReturnType}) default;\r\n\t}}\r\n";
+        return methodSymbol.ReturnsVoid ? " {}" : $" {{{Environment.NewLine}\t\treturn ({methodSymbol.ReturnType}) default;{Environment.NewLine}\t}}{Environment.NewLine}";
     }
 
     /// <summary>
@@ -144,7 +146,7 @@ internal static class Generator
         var name = methodSymbol.Name;
         var parameters = GetParameterListAsString(methodSymbol.Parameters);
 
-        return $"partial void {name}Interceptor({parameters});\r\n";
+        return $"partial void {name}Interceptor({parameters});{Environment.NewLine}";
     }
 
     /// <summary>
@@ -186,7 +188,7 @@ internal static class Generator
             .AppendLine()
             .AppendLine($"public class {newClassName} : {interfaceName} {{")
             .AppendLine()
-            .AppendLine(string.Join("\r\n\r\n", methodStrings))
+            .AppendLine(string.Join($"{Environment.NewLine}{Environment.NewLine}", methodStrings))
             .Append("}");
 
         context.AddSource($"{newClassName}.g.cs", stringBuilder.ToString());
