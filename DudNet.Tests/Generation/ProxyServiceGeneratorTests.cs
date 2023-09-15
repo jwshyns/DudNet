@@ -25,7 +25,7 @@ public class ProxyServiceGeneratorTests
 				{
 					MetadataReference.CreateFromFile(typeof(ProxyServiceGenerator).Assembly.Location)
 				}
-			}
+			},
 		}.RunAsync();
 	}
 
@@ -112,8 +112,8 @@ public class ExampleServiceDud : IExampleService {
 				Sources = { input },
 				GeneratedSources =
 				{
-					(typeof(SourceGeneratorAdapter<ProxyServiceGenerator>), "ExampleServiceProxy.g.cs", expectedProxy),
-					(typeof(SourceGeneratorAdapter<ProxyServiceGenerator>), "ExampleServiceDud.g.cs", expectedDud)
+					(typeof(SourceGeneratorAdapter<ProxyServiceGenerator>), "ExampleServiceProxy.g.cs", ConvertToNativeLineEndings(expectedProxy)),
+					(typeof(SourceGeneratorAdapter<ProxyServiceGenerator>), "ExampleServiceDud.g.cs", ConvertToNativeLineEndings(expectedDud))
 				},
 				AdditionalReferences =
 				{
@@ -121,5 +121,16 @@ public class ExampleServiceDud : IExampleService {
 				}
 			}
 		}.RunAsync();
+	}
+
+	private static string ConvertToNativeLineEndings(string input)
+	{
+		var nativeNewLine = Environment.NewLine;
+    
+		// First, normalize to Unix line endings
+		input = input.Replace("\r\n", "\n").Replace('\r', '\n');
+    
+		// Then, replace with the platform's line endings
+		return input.Replace("\n", nativeNewLine);
 	}
 }
