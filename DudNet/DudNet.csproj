@@ -15,10 +15,11 @@
         <MinVerTagPrefix>v</MinVerTagPrefix>
         <MinVerMinimumMajorMinor>1.0</MinVerMinimumMajorMinor>
         <EnablePackageValidation>true</EnablePackageValidation>
-        <LangVersion>10</LangVersion>
+        <LangVersion>11</LangVersion>
     </PropertyGroup>
 
     <ItemGroup>
+        <InternalsVisibleTo Include="DudNet.Tests" />
         <PackageReference Include="DotNet.ReproducibleBuilds" Version="1.1.1">
             <PrivateAssets>all</PrivateAssets>
             <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
@@ -27,7 +28,7 @@
             <PrivateAssets>all</PrivateAssets>
             <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
         </PackageReference>
-        <PackageReference Include="Microsoft.CodeAnalysis.CSharp" Version="4.6.0"/>
+        <PackageReference Include="Microsoft.CodeAnalysis.CSharp" Version="4.7.0" />
         <PackageReference Include="MinVer" Version="4.3.0">
             <PrivateAssets>all</PrivateAssets>
             <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>

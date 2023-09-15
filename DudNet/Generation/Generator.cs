@@ -33,27 +33,27 @@ internal static class Generator
         var methodStrings = methods.Select(GetProxyMethodString).Where(x => x is not null);
         // get string representing the partial interceptors
         var interceptorStrings = methods.Select(GetInterceptorMethodString);
-        
+
         // build the source
         var stringBuilder = new StringBuilder()
             .AppendLine("using System.Runtime.CompilerServices;")
             .AppendLine(usings)
-            .AppendLine()
             .AppendLine($"namespace {assemblyName};")
             .AppendLine()
             .AppendLine($"public partial class {newClassName} : {interfaceName} {{")
             .AppendLine()
             .AppendLine($"\tprivate readonly {interfaceName} _service;")
             .AppendLine()
-            .AppendLine(string.Join("\t", methodStrings))
-            .AppendLine("\tpartial void Interceptor([CallerMemberName]string callerName = null);\n")
-            .AppendLine($"\t{string.Join("\n\t", interceptorStrings)}")
+            .AppendLine(string.Join("\r\n\r\n", methodStrings))
+            .AppendLine()
+            .AppendLine("\tpartial void Interceptor([CallerMemberName]string callerName = null);\r\n")
+            .AppendLine($"\t{string.Join("\r\n\t", interceptorStrings)}")
             .Append('}');
-        
+
         // add the source to the compilation output
         context.AddSource($"{newClassName}.g.cs", stringBuilder.ToString());
     }
-    
+
     /// <summary>
     /// Builds a list of string representing usings for the service being proxied.
     /// </summary>
@@ -76,22 +76,22 @@ internal static class Generator
 
         // Retrieve all using directives in the file
         usingDirectivesList.AddRange(root.Usings.Select(usingDirective =>
-            usingDirective.NormalizeWhitespace().ToFullString()));
+            $"{usingDirective.NormalizeWhitespace().ToFullString()}\r\n"));
 
         return usingDirectivesList;
     }
-    
+
     /// <summary>
     /// Builds a string presenting a proxied method.
     /// </summary>
     /// <param name="methodSymbol">The <see cref="IMethodSymbol"/> being proxied.</param>
     /// <returns>A string representing a proxied method.</returns>
-    private static string? GetProxyMethodString(IMethodSymbol methodSymbol)
+    private static string GetProxyMethodString(IMethodSymbol methodSymbol)
     {
-        var methodString = methodSymbol.DeclaringSyntaxReferences.FirstOrDefault()?.GetSyntax().ToFullString();
-        return methodString?.Replace(";", GetProxyMethodStringBody(methodSymbol));
+        var methodString = methodSymbol.DeclaringSyntaxReferences.FirstOrDefault()?.GetSyntax().ToFullString().Trim();
+        return $"\t{methodString?.Replace(";", GetProxyMethodStringBody(methodSymbol))}";
     }
-    
+
     /// <summary>
     /// Builds a string representing the body of a proxied method.
     /// </summary>
@@ -101,16 +101,39 @@ internal static class Generator
     {
         var methodName = methodSymbol.Name;
         var methodArgumentString = string.Join(", ", methodSymbol.Parameters.Select(x => x.Name));
+        var returnString = methodSymbol.ReturnsVoid ? "" : "return ";
+        
         var stringBuilder = new StringBuilder()
-            .AppendLine("{")
+            .AppendLine(" {")
             .AppendLine("\t\tInterceptor();")
             .AppendLine($"\t\t{methodName}Interceptor({methodArgumentString});")
-            .AppendLine($"\t\t_service.{methodName}({methodArgumentString});")
+            .AppendLine($"\t\t{returnString}_service.{methodName}({methodArgumentString});")
             .Append("\t}");
 
         return stringBuilder.ToString();
     }
+
+    /// <summary>
+    /// Builds a string presenting a dud method.
+    /// </summary>
+    /// <param name="methodSymbol">The <see cref="IMethodSymbol"/> being made dud.</param>
+    /// <returns>A string representing a dud method.</returns>
+    private static string GetDudMethodString(IMethodSymbol methodSymbol)
+    {
+        var methodString = methodSymbol.DeclaringSyntaxReferences.FirstOrDefault()?.GetSyntax().ToFullString().Trim();
+        return $"\t{methodString?.Replace(";", GetDudMethodStringBody(methodSymbol))}";
+    }
     
+    /// <summary>
+    /// Builds a string representing the body of a dud method.
+    /// </summary>
+    /// <param name="methodSymbol">The <see cref="IMethodSymbol"/> being made dud.</param>
+    /// <returns>A string representing body of a dud method.</returns>
+    private static string GetDudMethodStringBody(IMethodSymbol methodSymbol)
+    {
+        return methodSymbol.ReturnsVoid ? " {}" : $" {{\r\n\t\treturn ({methodSymbol.ReturnType}) default;\r\n\t}}\r\n";
+    }
+
     /// <summary>
     /// Builds a string representation of an interceptor for a particular <see cref="IMethodSymbol"/>.
     /// </summary>
@@ -121,9 +144,9 @@ internal static class Generator
         var name = methodSymbol.Name;
         var parameters = GetParameterListAsString(methodSymbol.Parameters);
 
-        return $"partial void {name}Interceptor({parameters});\n";
+        return $"partial void {name}Interceptor({parameters});\r\n";
     }
-    
+
     /// <summary>
     /// Converts a <see cref="ImmutableArray{IParameterSymbol}"/> to a string representation.
     /// </summary>
@@ -133,7 +156,7 @@ internal static class Generator
     {
         return string.Join(", ", parameterSymbols.Select(x => $"{x.Type} {x.Name}"));
     }
-    
+
     /// <summary>
     /// Creates source for a dud service.
     /// </summary>
@@ -153,20 +176,18 @@ internal static class Generator
     )
     {
         var newClassName = $"{className}Dud";
-        
-        // get 
-        var methodStrings = methods
-            .Select(x => x.DeclaringSyntaxReferences.FirstOrDefault()?.GetSyntax().ToFullString().Replace(";", "{}"));
+
+        // get
+        var methodStrings = methods.Select(GetDudMethodString);
 
         var stringBuilder = new StringBuilder()
             .AppendLine(usings)
-            .AppendLine()
             .AppendLine($"namespace {assemblyName};")
             .AppendLine()
             .AppendLine($"public class {newClassName} : {interfaceName} {{")
             .AppendLine()
-            .AppendLine(string.Join("\t", methodStrings))
-            .AppendLine("}");
+            .AppendLine(string.Join("\r\n\r\n", methodStrings))
+            .Append("}");
 
         context.AddSource($"{newClassName}.g.cs", stringBuilder.ToString());
     }
