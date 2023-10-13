@@ -1,0 +1,9 @@
+﻿{
+  "$schema": "http://json.schemastore.org/launchsettings.json",
+  "profiles": {
+    "DudNet": {
+      "commandName": "DebugRoslynComponent",
+      "targetProject": "../ConsoleApp1/ConsoleApp1.csproj"
+    }
+  }
+}

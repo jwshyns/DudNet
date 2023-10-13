@@ -1,10 +1,11 @@
 ﻿# DudNet
 
-DudNet is a C# source generator for implementing a proxy pattern. 
+DudNet is a C# source generator for implementing a proxy pattern.
 
 ## Example
 
 Generating a proxy for a class is as simple as marking it with the `ProxyServiceAttribute` as follows:
+
 ```csharp
 using DudNet.Attributes;
 
@@ -35,6 +36,7 @@ public class ExampleService : IExampleService {
 ```
 
 Which would generate the following two classes:
+
 ```csharp
 using System.Runtime.CompilerServices;
 using DudNet.Attributes;
@@ -62,7 +64,9 @@ public partial class ExampleServiceProxy : IExampleService {
 	partial void ExampleFunctionWithArgumentAndReturnInterceptor(int number);
 }
 ```
-and 
+
+and
+
 ```csharp
 using DudNet.Attributes;
 
@@ -78,6 +82,7 @@ public class ExampleServiceDud : IExampleService {
 ```
 
 These generated classes can be used by further implementing the `partial` proxy class as follows:
+
 ```csharp
 public partial class ExampleServiceProxy : IExampleService {
     

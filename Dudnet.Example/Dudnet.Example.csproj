@@ -1,0 +1,17 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <TargetFramework>net7.0</TargetFramework>
+        <ImplicitUsings>enable</ImplicitUsings>
+        <Nullable>enable</Nullable>
+        <AssemblyName>DudNet.Example</AssemblyName>
+        <RootNamespace>DudNet.Example</RootNamespace>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <Analyzer Include="..\DudNet\bin\Debug\netstandard2.0\DudNet.dll" />
+      <ProjectReference Include="..\DudNet\DudNet.csproj" />
+    </ItemGroup>
+
+
+</Project>
