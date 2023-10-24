@@ -4,7 +4,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DudNet", "DudNet\DudNet.csp
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DudNet.Tests", "DudNet.Tests\DudNet.Tests.csproj", "{2867C0E1-743A-41DA-A51A-CAE7F2C6A526}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DudNet.Example", "DudNet.Example\DudNet.Example.csproj", "{12AC76C8-C00B-423F-ABD3-26C69E84AD59}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DudNet.Sample", "DudNet.Sample\DudNet.Sample.csproj", "{12AC76C8-C00B-423F-ABD3-26C69E84AD59}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

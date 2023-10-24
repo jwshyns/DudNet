@@ -3,7 +3,7 @@
   "profiles": {
     "DudNet": {
       "commandName": "DebugRoslynComponent",
-      "targetProject": "../DudNet.Example/DudNet.Example.csproj"
+      "targetProject": "../DudNet.Sample/DudNet.Sample.csproj"
     }
   }
 }
