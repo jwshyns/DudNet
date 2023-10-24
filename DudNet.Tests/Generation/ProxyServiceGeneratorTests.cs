@@ -63,6 +63,7 @@ using DudNet.Attributes;
 
 namespace TestProject;
 
+/// <inheritdoc cref="IExampleService"/>
 public partial class ExampleServiceProxy : IExampleService {
 
 	private readonly IExampleService _service;
@@ -72,31 +73,29 @@ public partial class ExampleServiceProxy : IExampleService {
 		ExampleFunctionInterceptor();
 		_service.ExampleFunction();
 	}
-
 	public int ExampleFunctionWithArgumentAndReturn(int number) {
 		Interceptor();
 		ExampleFunctionWithArgumentAndReturnInterceptor(number);
 		return _service.ExampleFunctionWithArgumentAndReturn(number);
 	}
-
 	partial void Interceptor([CallerMemberName]string callerName = null);
-
 	partial void ExampleFunctionInterceptor();
-
 	partial void ExampleFunctionWithArgumentAndReturnInterceptor(int number);
 
 }
 """;
 		
 		const string expectedDud = """
+using System.Runtime.CompilerServices;
 using DudNet.Attributes;
 
 namespace TestProject;
 
-public class ExampleServiceDud : IExampleService {
+/// <inheritdoc cref="IExampleService"/>
+public partial class ExampleServiceDud : IExampleService {
 
-	public void ExampleFunction() {}
-
+	public void ExampleFunction() {
+	}
 	public int ExampleFunctionWithArgumentAndReturn(int number) {
 		return (int) default;
 	}
@@ -123,4 +122,131 @@ public class ExampleServiceDud : IExampleService {
 		}.RunAsync();
 	}
 	
+	[Fact]
+	public async Task ShouldGenerate_WhenValidTargetFoundAndHasProperties()
+	{
+		const string input = """
+using DudNet.Attributes;
+
+namespace TestProject;
+
+internal interface IPerson
+{
+	string? FirstName { get; set; }
+	string? LastName { get; set; }
+
+	string FullName();
+}
+
+[ProxyService]
+public class Person : IPerson
+{
+	public string? FirstName { get; set; }
+	public string? LastName { get; set; }
+
+	public string FullName()
+	{
+		return FirstName + " " + LastName;
+	}
+}
+""";
+		
+		const string expectedProxy = """
+using System.Runtime.CompilerServices;
+using DudNet.Attributes;
+
+namespace TestProject;
+
+/// <inheritdoc cref="IPerson"/>
+public partial class PersonProxy : IPerson {
+
+	private readonly IPerson _service;
+
+	public string? FirstName {
+		get {
+			Interceptor();
+			get_FirstNameInterceptor();
+			return _service.FirstName;
+		}
+		set {
+			Interceptor();
+			set_FirstNameInterceptor(value);
+			_service.FirstName = value;
+		}
+	}
+	public string? LastName {
+		get {
+			Interceptor();
+			get_LastNameInterceptor();
+			return _service.LastName;
+		}
+		set {
+			Interceptor();
+			set_LastNameInterceptor(value);
+			_service.LastName = value;
+		}
+	}
+	public string FullName() {
+		Interceptor();
+		FullNameInterceptor();
+		return _service.FullName();
+	}
+	partial void Interceptor([CallerMemberName]string callerName = null);
+	partial void get_FirstNameInterceptor();
+	partial void set_FirstNameInterceptor(string? value);
+	partial void get_LastNameInterceptor();
+	partial void set_LastNameInterceptor(string? value);
+	partial void FullNameInterceptor();
+
+}
+""";
+		
+		const string expectedDud = """
+using System.Runtime.CompilerServices;
+using DudNet.Attributes;
+
+namespace TestProject;
+
+/// <inheritdoc cref="IPerson"/>
+public partial class PersonDud : IPerson {
+
+	public string? FirstName {
+		get {
+			return (string?) default;
+		}
+		set {
+		}
+	}
+	public string? LastName {
+		get {
+			return (string?) default;
+		}
+		set {
+		}
+	}
+	public string FullName() {
+		return (string) default;
+	}
+
+}
+""";
+
+		await new GeneratorTest
+		{
+			ReferenceAssemblies = Reference,
+			TestState =
+			{
+				Sources = { input },
+				GeneratedSources =
+				{
+					(typeof(SourceGeneratorAdapter<ProxyServiceGenerator>), "PersonProxy.g.cs", expectedProxy),
+					(typeof(SourceGeneratorAdapter<ProxyServiceGenerator>), "PersonDud.g.cs", expectedDud)
+				},
+				AdditionalReferences =
+				{
+					MetadataReference.CreateFromFile(typeof(ProxyServiceGenerator).Assembly.Location)
+				}
+			}
+		}.RunAsync();
+	}
 }
