@@ -74,7 +74,7 @@ jobs:
     runs-on: ubuntu-latest
     needs: [ validate_nuget, run_test ]
     steps:
-      - uses: actions/download-artifact@v3
+      - uses: actions/download-artifact@v4
         with:
           pattern: nuget-*
           merge-multiple: true
