@@ -1,6 +1,6 @@
 ﻿using DudNet.Attributes;
 
-namespace DudNet.Example;
+namespace DudNet.Sample;
 
 [ProxyService]
 public class Person : IPerson
@@ -12,4 +12,6 @@ public class Person : IPerson
 	{
 		return FirstName + " " + LastName;
 	}
+
+	public string Id { get; set; }
 }

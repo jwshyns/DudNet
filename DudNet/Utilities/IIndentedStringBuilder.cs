@@ -1,6 +1,6 @@
 ﻿namespace DudNet.Utilities;
 
-public interface IIndentedStringBuilder
+internal interface IIndentedStringBuilder
 {
 	IIndentedStringBuilder Append(char character);
 	IIndentedStringBuilder AppendLine();

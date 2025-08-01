@@ -5,7 +5,7 @@ namespace DudNet.Generation;
 /// <summary>
 ///     A wrapper for making unit testing more convenient.
 /// </summary>
-public class GeneratorSyntaxContextWrapper : IGeneratorSyntaxContextWrapper
+internal sealed class GeneratorSyntaxContextWrapper : IGeneratorSyntaxContextWrapper
 {
 	/// <summary>
 	///     The generation context.

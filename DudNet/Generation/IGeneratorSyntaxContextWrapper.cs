@@ -2,7 +2,7 @@
 
 namespace DudNet.Generation;
 
-public interface IGeneratorSyntaxContextWrapper
+internal interface IGeneratorSyntaxContextWrapper
 {
     /// <summary>
     ///     The node being evaluated.

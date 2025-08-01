@@ -7,63 +7,69 @@ namespace DudNet.Generation;
 ///     A source generator for generating a proxied service.
 /// </summary>
 [Generator]
-public class ProxyServiceGenerator : IIncrementalGenerator
+public sealed class ProxyServiceGenerator : IIncrementalGenerator
 {
-	/// <inheritdoc cref="IIncrementalGenerator.Initialize" />
-	public void Initialize(IncrementalGeneratorInitializationContext context)
-	{
-		IncrementalValuesProvider<INamedTypeSymbol> classDeclarations = context.SyntaxProvider
-			.CreateSyntaxProvider(static (s, _) => Parser.IsPotentialTarget(s),
-				(ctx, _) => Parser.GetSemanticTargetForGeneration(new GeneratorSyntaxContextWrapper(ctx)))
-			.Where(static symbol => symbol is not null)!;
+    /// <inheritdoc cref="IIncrementalGenerator.Initialize" />
+    public void Initialize(IncrementalGeneratorInitializationContext context)
+    {
+        IncrementalValuesProvider<INamedTypeSymbol> classDeclarations = context.SyntaxProvider
+            .CreateSyntaxProvider(static (s, _) => Parser.IsPotentialTarget(s),
+                (ctx, _) => Parser.GetSemanticTargetForGeneration(new GeneratorSyntaxContextWrapper(ctx)))
+            .Where(static symbol => symbol is not null)!;
 
-		var compilationAndClasses =
-			context.CompilationProvider.Combine(classDeclarations.Collect());
+        var compilationAndClasses =
+            context.CompilationProvider.Combine(classDeclarations.Collect());
 
-		context.RegisterSourceOutput(compilationAndClasses,
-			static (spc, source) => Execute(source.Right, spc));
-	}
+        context.RegisterSourceOutput(compilationAndClasses,
+            static (spc, source) => Execute(source.Right, spc));
+    }
 
-	/// <summary>
-	///     Performs further filtering of source generation targets and performs the actual generation.
-	/// </summary>
-	/// <param name="targets">Potential targets for source generation.</param>
-	/// <param name="context">Context for source generation.</param>
-	private static void Execute(
-		ImmutableArray<INamedTypeSymbol> targets,
-		SourceProductionContext context
-	)
-	{
-		if (targets.IsDefaultOrEmpty)
-		{
-			return;
-		}
+    /// <summary>
+    ///     Performs further filtering of source generation targets and performs the actual generation.
+    /// </summary>
+    /// <param name="targets">Potential targets for source generation.</param>
+    /// <param name="context">Context for source generation.</param>
+    private static void Execute(
+        ImmutableArray<INamedTypeSymbol> targets,
+        SourceProductionContext context
+    )
+    {
+        if (targets.IsDefaultOrEmpty) return;
 
-		foreach (var target in targets)
-		{
-			// targets must implement an interface
-			if (target.Interfaces[0] is not { } interfaceSymbol)
-			{
-				continue;
-			}
+        foreach (var target in targets)
+        {
+            // targets must implement an interface
+            if (target.Interfaces[0] is not { } interfaceSymbol) continue;
 
-			var interfaceName = interfaceSymbol.Name;
+            var interfaceName = interfaceSymbol.Name;
 
-			var assemblyName = target.ContainingAssembly.Name;
-			var name = target.Name;
+            var assemblyName = target.ContainingAssembly.Name;
+            var name = target.Name;
 
-			// collect methods on the interface
-			var methods = interfaceSymbol.GetMembers()
-				.Where(m => m is IMethodSymbol { DeclaredAccessibility: Accessibility.Public })
-				.OfType<IMethodSymbol>()
-				.ToList();
+            // collect methods on the interface
+            var methods = new List<IMethodSymbol>();
+            GetMethodSymbols(interfaceSymbol, methods);
 
-			// generates a string representation of necessary usings (imports)
-			var usings = string.Join("", Generator.GetUsingDirectivesForTypeFile(target));
+            // generates a string representation of necessary usings (imports)
+            var usings = string.Join("", Generator.GetUsingDirectivesForTypeFile(target));
 
-			// generate the source files
-			Generator.GenerateProxyService(context, usings, name, interfaceName, assemblyName, methods);
-			Generator.GenerateDudService(context, usings, name, interfaceName, assemblyName, methods);
-		}
-	}
+            // generate the source files
+            Generator.GenerateProxyService(context, usings, name, interfaceName, assemblyName, methods);
+            Generator.GenerateDudService(context, usings, name, interfaceName, assemblyName, methods);
+        }
+    }
+
+    private static void GetMethodSymbols(INamedTypeSymbol interfaceSymbol, List<IMethodSymbol> methods)
+    {
+        // add the methods for the current interface
+        var currentInterfaceSymbolMethods = interfaceSymbol.GetMembers()
+            .Where(m => m is IMethodSymbol { DeclaredAccessibility: Accessibility.Public })
+            .OfType<IMethodSymbol>()
+            .ToList();
+        methods.AddRange(currentInterfaceSymbolMethods);
+
+        // add the methods for the current interface's interfaces
+        foreach (var nestedInterfaceSymbol in interfaceSymbol.Interfaces)
+            GetMethodSymbols(nestedInterfaceSymbol, methods);
+    }
 }

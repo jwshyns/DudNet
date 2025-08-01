@@ -2,7 +2,7 @@
 
 namespace DudNet.Utilities;
 
-public class IndentedStringBuilder : IIndentedStringBuilder
+internal sealed class IndentedStringBuilder : IIndentedStringBuilder
 {
 	private readonly char _indentationChar;
 	private readonly StringBuilder _stringBuilder;

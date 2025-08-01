@@ -7,7 +7,7 @@ namespace DudNet.Generation;
 /// <summary>
 ///     Functionality for parsing for appropriate source generation targets.
 /// </summary>
-internal class Parser
+internal sealed class Parser
 {
 	/// <summary>
 	///     Determines whether a particular <see cref="SyntaxNode" /> is potential target for proxy service generation.

@@ -4,6 +4,7 @@
 ///     Used for making whether a service should be proxied.
 /// </summary>
 [AttributeUsage(AttributeTargets.Class)]
-public sealed class ProxyServiceAttribute : Attribute
+// ReSharper disable once ClassCanBeSealed.Global
+public class ProxyServiceAttribute : Attribute
 {
 }
