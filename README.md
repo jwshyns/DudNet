@@ -1,4 +1,4 @@
-﻿# DudNet [![NuGet Package](https://buildstats.info/nuget/Jwshyns.DudNet)](https://www.nuget.org/packages/Jwshyns.DudNet)
+﻿# DudNet [![NuGet Package](https://badgen.net/nuget/v/DudNet)](https://www.nuget.org/packages/Jwshyns.DudNet)
  
 DudNet is a C# source generator for implementing a proxy pattern. 
 
