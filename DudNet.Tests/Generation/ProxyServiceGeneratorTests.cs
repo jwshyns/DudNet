@@ -8,7 +8,7 @@ using GeneratorTest =
 	Microsoft.CodeAnalysis.CSharp.Testing.CSharpSourceGeneratorTest<SourceGeneratorAdapter<ProxyServiceGenerator>,
 		Microsoft.CodeAnalysis.Testing.Verifiers.XUnitVerifier>;
 
-public class ProxyServiceGeneratorTests
+public sealed class ProxyServiceGeneratorTests
 {
 	private static readonly ReferenceAssemblies Reference = ReferenceAssemblies.Net.Net60;
 
@@ -73,13 +73,17 @@ public partial class ExampleServiceProxy : IExampleService {
 		ExampleFunctionInterceptor();
 		_service.ExampleFunction();
 	}
+
 	public int ExampleFunctionWithArgumentAndReturn(int number) {
 		Interceptor();
 		ExampleFunctionWithArgumentAndReturnInterceptor(number);
 		return _service.ExampleFunctionWithArgumentAndReturn(number);
 	}
+
 	partial void Interceptor([CallerMemberName]string callerName = null);
+
 	partial void ExampleFunctionInterceptor();
+
 	partial void ExampleFunctionWithArgumentAndReturnInterceptor(int number);
 
 }
@@ -96,6 +100,7 @@ public partial class ExampleServiceDud : IExampleService {
 
 	public void ExampleFunction() {
 	}
+
 	public int ExampleFunctionWithArgumentAndReturn(int number) {
 		return (int) default;
 	}
@@ -130,7 +135,12 @@ using DudNet.Attributes;
 
 namespace TestProject;
 
-internal interface IPerson
+internal interface IEntity
+{
+	string Id { get; set; }
+}
+
+internal interface IPerson : IEntity
 {
 	string? FirstName { get; set; }
 	string? LastName { get; set; }
@@ -148,6 +158,8 @@ public class Person : IPerson
 	{
 		return FirstName + " " + LastName;
 	}
+	
+	public string Id { get; set; }
 }
 """;
 		
@@ -168,35 +180,66 @@ public partial class PersonProxy : IPerson {
 			get_FirstNameInterceptor();
 			return _service.FirstName;
 		}
+
 		set {
 			Interceptor();
 			set_FirstNameInterceptor(value);
 			_service.FirstName = value;
 		}
+
 	}
+
 	public string? LastName {
 		get {
 			Interceptor();
 			get_LastNameInterceptor();
 			return _service.LastName;
 		}
+
 		set {
 			Interceptor();
 			set_LastNameInterceptor(value);
 			_service.LastName = value;
 		}
+
 	}
+
+	public string Id {
+		get {
+			Interceptor();
+			get_IdInterceptor();
+			return _service.Id;
+		}
+
+		set {
+			Interceptor();
+			set_IdInterceptor(value);
+			_service.Id = value;
+		}
+
+	}
+
 	public string FullName() {
 		Interceptor();
 		FullNameInterceptor();
 		return _service.FullName();
 	}
+
 	partial void Interceptor([CallerMemberName]string callerName = null);
+
 	partial void get_FirstNameInterceptor();
+
 	partial void set_FirstNameInterceptor(string? value);
+
 	partial void get_LastNameInterceptor();
+
 	partial void set_LastNameInterceptor(string? value);
+
 	partial void FullNameInterceptor();
+
+	partial void get_IdInterceptor();
+
+	partial void set_IdInterceptor(string value);
 
 }
 """;
@@ -214,16 +257,32 @@ public partial class PersonDud : IPerson {
 		get {
 			return (string?) default;
 		}
+
 		set {
 		}
+
 	}
+
 	public string? LastName {
 		get {
 			return (string?) default;
 		}
+
 		set {
 		}
+
 	}
+
+	public string Id {
+		get {
+			return (string) default;
+		}
+
+		set {
+		}
+
+	}
+
 	public string FullName() {
 		return (string) default;
 	}
