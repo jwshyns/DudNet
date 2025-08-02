@@ -144,8 +144,8 @@ internal interface IPerson : IEntity
 {
 	string? FirstName { get; set; }
 	string? LastName { get; set; }
-
 	string FullName();
+	void FullName(string fullname);
 }
 
 [ProxyService]
@@ -157,6 +157,10 @@ public class Person : IPerson
 	public string FullName()
 	{
 		return FirstName + " " + LastName;
+	}
+	
+	public void FullName(string fullname)
+	{
 	}
 	
 	public string Id { get; set; }
@@ -225,6 +229,12 @@ public partial class PersonProxy : IPerson {
 		return _service.FullName();
 	}
 
+	public void FullName(string fullname) {
+		Interceptor();
+		FullNameInterceptor(fullname);
+		_service.FullName(fullname);
+	}
+
 	partial void Interceptor([CallerMemberName]string callerName = null);
 
 	partial void get_FirstNameInterceptor();
@@ -236,6 +246,8 @@ public partial class PersonProxy : IPerson {
 	partial void set_LastNameInterceptor(string? value);
 
 	partial void FullNameInterceptor();
+
+	partial void FullNameInterceptor(string fullname);
 
 	partial void get_IdInterceptor();
 
@@ -285,6 +297,9 @@ public partial class PersonDud : IPerson {
 
 	public string FullName() {
 		return (string) default;
+	}
+
+	public void FullName(string fullname) {
 	}
 
 }

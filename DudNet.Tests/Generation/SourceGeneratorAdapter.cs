@@ -1,10 +1,11 @@
 ﻿using Microsoft.CodeAnalysis;
 
-namespace DudNet.Tests;
+namespace DudNet.Tests.Generation;
 
 // Courtesy of https://github.com/jmarolf/generator-start/blob/main/tests/Adapter.cs
-
+#pragma warning disable RS1042
 internal sealed class SourceGeneratorAdapter<TIncrementalGenerator> : ISourceGenerator, IIncrementalGenerator
+#pragma warning restore RS1042
     where TIncrementalGenerator : IIncrementalGenerator, new()
 {
     private readonly TIncrementalGenerator _internalGenerator = new();

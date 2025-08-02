@@ -3,15 +3,19 @@
 namespace DudNet.Sample;
 
 [ProxyService]
-public class Person : IPerson
+public sealed class Person : IPerson
 {
-	public string? FirstName { get; set; }
-	public string? LastName { get; set; }
+    public string? FirstName { get; set; }
+    public string? LastName { get; set; }
 
-	public string FullName()
-	{
-		return FirstName + " " + LastName;
-	}
+    public string FullName()
+    {
+        return FirstName + " " + LastName;
+    }
 
-	public string Id { get; set; }
+    public void FullName(string fullname)
+    {
+    }
+
+    public string Id { get; set; }
 }

@@ -13,5 +13,9 @@
       <ProjectReference Include="..\DudNet\DudNet.csproj" />
     </ItemGroup>
 
+    <ItemGroup>
+        <InternalsVisibleTo Include="DudNet.Tests" />
+        <InternalsVisibleTo Include="DynamicProxyGenAssembly2" />
+    </ItemGroup>
 
 </Project>
